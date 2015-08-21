@@ -1,0 +1,52 @@
+#ifndef __BLOCK_MANAGER_H__
+#define __BLOCK_MANAGER_H__
+
+#include "cocos2d.h"
+#include "Block.h"
+
+//#define SPLIT_LINE_WIDTH 2
+#define STAGE_WIDTH_COUNT 10
+#define STAGE_HEIGHT_COUNT 15
+
+using namespace cocos2d;
+
+class BlockManager:public CCNode
+{
+public: //System functions
+	BlockManager();
+	~BlockManager();
+	CREATE_FUNC(BlockManager);
+	virtual bool init();
+	virtual void update(float delta);
+
+public: //Custum functions
+//	void insertBlockToArray(Block* block);
+//	void removeBlockFromArray(int index);
+//	CCPoint blockPositionToPixel(int x, int y);
+
+	void pressedLeft();
+	void pressedRight();
+	void pressedDown();
+	void pressedTurn();
+
+public: //Attributes
+	int m_dataMatrix[STAGE_WIDTH_COUNT][STAGE_HEIGHT_COUNT];
+
+private: //Custum functions
+	static Block* _createNextBlock();
+	void _drawDeadBlocks();
+	int _eliminateLines();
+	bool _updateBlocksPosition(); //尝试更新位置 返回是否更新成功
+	bool _addBlockToStage(); //把当前方块作为child加入manager
+	bool _stopCurrentBlockDrop(); //停止当前方块下落 修改方块数组 消除整行 从child中移除当前方块 返回游戏是否可以继续
+	bool _endGame(void(*pFunc)(void));
+	bool _canGameContinue();
+
+private: //Attributes
+//	CCArray* m_dropingBlocks;
+	Block* m_nextBlock;
+	Block* m_curruntBlock;
+
+}; //class BlockManager
+
+#endif // !__BLOCK_MANAGER_H__

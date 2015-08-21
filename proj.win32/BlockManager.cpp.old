@@ -1,0 +1,102 @@
+#include "BlockManager.h"
+
+BlockManager::BlockManager()
+{
+	
+} //BlockManager::BlockManager()
+
+BlockManager::~BlockManager()
+{
+
+} //BlockManager::~BlockManager()
+
+bool BlockManager::init()
+{
+	this->m_curruntBlock = BlockManager::_createNextBlock();
+	this->m_curruntBlock->bindManager(this);
+	
+	this->m_nextBlock = BlockManager::_createNextBlock();
+	this->m_nextBlock->bindManager(this);
+
+	//Set Position
+
+	this->_addBlockToStage();
+	
+	this->scheduleUpdate();
+
+	return true;
+} //bool BlocmManager::init()
+
+void BlockManager::update(float delta)
+{
+	if (m_curruntBlock->increaseTimeCounter()) //如果需要更新状态
+	{
+		if(!this->_updateBlocksPosition()) //如果更新状态不成功（下方被阻挡）
+		{
+			this->_drawDeadBlocks();
+			if(this->_stopCurrentBlockDrop()) //如果游戏可以继续
+			{
+				this->m_curruntBlock = this->m_nextBlock;
+				this->m_nextBlock = this->_createNextBlock();
+				this->_addBlockToStage();
+			}
+			else
+			{
+				//结束游戏
+				//this->_endGame();
+			}
+		}
+	}
+} //void BlockManager::update(float delta)
+
+bool BlockManager::_addBlockToStage()
+{
+	if (this->m_curruntBlock->getSprite())
+	{
+		this->m_curruntBlock->setPosition(
+			ccp(
+			this->getPositionX(),
+			this->getPositionY() + 
+				  STAGE_HEIGHT_COUNT % 2 * CELL_SIZE / 2 +
+				  STAGE_HEIGHT_COUNT / 2 * CELL_SIZE -
+				  BLOCK_WIDTH_COUNT / 2 * CELL_SIZE 
+			));
+
+		//Set Next Block's Position
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool BlockManager::_updateBlocksPosition()
+{
+	return this->m_curruntBlock->tryMove(Block::Direction::Down);
+}
+
+bool BlockManager::_stopCurrentBlockDrop()
+{
+	this->removeChild(m_curruntBlock);
+	
+	Block::CellPosition cellPosition = this->m_curruntBlock->getCellPosition();
+	this->m_dataMatrix[cellPosition.one[0]][cellPosition.one[1]] = 1;
+	this->m_dataMatrix[cellPosition.two[0]][cellPosition.two[1]] = 1;
+	this->m_dataMatrix[cellPosition.three[0]][cellPosition.three[1]] = 1;
+	this->m_dataMatrix[cellPosition.four[0]][cellPosition.four[1]] = 1;
+
+	this->_eliminateLines();
+
+	return _canGameContinue();
+
+} //bool BlockManager::_stopCurrentBlockDrop()
+
+Block* BlockManager::_createNextBlock()
+{
+	return Block::generateNewBlock();
+} //Block* BlockManager::_createNextBlock()
+
+void BlockManager::_drawDeadBlocks()
+{
+	
+} //void BlockManager::_drawDeadBlocks()
