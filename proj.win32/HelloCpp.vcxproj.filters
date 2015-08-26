@@ -87,6 +87,9 @@
     <ClCompile Include="DisplayManager.cpp">
       <Filter>Manager\DisplayManager</Filter>
     </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>Scene\TestScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="DisplayManager.h">
       <Filter>Manager\DisplayManager</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.h">
+      <Filter>Scene\TestScene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

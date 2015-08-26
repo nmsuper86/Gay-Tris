@@ -50,7 +50,7 @@ private: //私有自定义函数
 	virtual void _doTryDrop(); //尝试下落
 
 	virtual bool _currentBlockCanMove(Block::Direction direction); //判断方块是否可以向特定方向移动
-	virtual void _currentBlockDoDrop(); //使当前方块下落
+	virtual void _currentBlockDoMove(Block::Direction direction); //使当前方块移动
 	virtual void _currentBlockStopDrop(); //停止当前方块下落
 
 	virtual void _updateCellMatrixForMove(Block::Direction direction); //为Block移动更新单元矩阵
@@ -84,7 +84,7 @@ private:
 
 	CellState m_cellMatrix[CELL_MATRIX_WIDTH][CELL_MATRIX_HEIGHT];
 	DisplayManger* m_displayManager;
-//	CCSpriteBatchNode* m_deadBlockBatch;
+	CCSpriteBatchNode* m_deadBlockBatch;
 
 }; //class BlockManager
 

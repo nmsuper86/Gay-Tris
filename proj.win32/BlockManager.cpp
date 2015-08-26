@@ -15,8 +15,7 @@ BlockManager::~BlockManager()
 
 bool BlockManager::init()
 {
-	this->scheduleUpdate();
-
+	//初始化单元状态矩阵
 	for (int x = 0; x < CELL_MATRIX_WIDTH; x++)
 	{
 		for (int y = 0; y < CELL_MATRIX_HEIGHT; y++)
@@ -25,13 +24,22 @@ bool BlockManager::init()
 		}
 	}
 
+	//设定默认更新频率
 	this->m_updateTime = DEFAULT_REFRESH_TIME;
 
+	//创建第一个块
 	this->m_nextBlock = _createNewBlock();
 	this->m_nextBlock->bindManager(this);
 
+	//放入第一个块并创建第二个块
 	this->_pushNewBlock();
 
+	//初始化已死方块批量精灵
+	this->m_deadBlockBatch = CCSpriteBatchNode::create("BlockDead.png", CELL_MATRIX_WIDTH * CELL_MATRIX_HEIGHT);
+	this->addChild(this->m_deadBlockBatch);
+/**********************************************/
+	this->scheduleUpdate();
+/**********************************************/
 	return true;
 }
 
@@ -63,7 +71,10 @@ void BlockManager::bindDisplayManager(DisplayManger* manager)
 
 CCPoint BlockManager::convertBlockToPixel(CCPoint blockPoint)
 {
-	return ccp(blockPoint.x * CELL_SIZE, blockPoint.y * CELL_SIZE);
+	CCPoint resultPoint;
+	resultPoint.x = this->getPositionX() - CELL_MATRIX_WIDTH / 2 * CELL_SIZE + blockPoint.x * CELL_SIZE;
+	resultPoint.y = this->getPositionY() + CELL_MATRIX_HEIGHT / 2 * CELL_SIZE - blockPoint.y * CELL_SIZE;
+	return resultPoint;
 } //CCPoint BlockManager::convertBlockToPixel(CCPoint blockPoint)
 
 #pragma endregion
@@ -91,7 +102,7 @@ void BlockManager::_doTryDrop()
 {
 	if (this->_currentBlockCanMove(Block::Direction::Down))
 	{
-		this->_currentBlockDoDrop();
+		this->_currentBlockDoMove(Block::Direction::Down);
 	}
 	else
 	{
@@ -154,10 +165,10 @@ bool BlockManager::_currentBlockCanMove(Block::Direction direction)
 	return true;
 } //bool BlockManager::_currentBlockCanDrop()
 
-void BlockManager::_currentBlockDoDrop()
+void BlockManager::_currentBlockDoMove(Block::Direction direction)
 {
-	this->m_currentBlock->doMove(Block::Direction::Down);
-	this->_updateCellMatrixForMove(Block::Direction::Down);
+	this->m_currentBlock->doMove(direction);
+	this->_updateCellMatrixForMove(direction);
 //	this->m_currentBlock->resetTimeCounter();
 } //void BlockManager::_currentBlockDoDrop()
 
@@ -259,7 +270,7 @@ void BlockManager::_pushNewBlock()
 {
 	this->m_currentBlock = this->m_nextBlock;
 	this->addChild(this->m_currentBlock);
-	this->m_currentBlock->getSprite()->setPosition(this->convertBlockToPixel(ccp(CELL_MATRIX_WIDTH / 2, BLOCK_WIDTH_COUNT / 2)));
+	this->m_currentBlock->setPosition(this->convertBlockToPixel(ccp(CELL_MATRIX_WIDTH / 2, BLOCK_WIDTH_COUNT / 2)));
 
 	Block::CellPosition position = this->m_currentBlock->getCellPosition();
 	for (int i = 0; i < 4; i++)
@@ -280,11 +291,12 @@ bool BlockManager::_canGameContinue()
 		{
 			return false;
 		}
-		return true;
 	}
+	return true;
 
 } //bool BlockManager::_canGameContinue()
 
+//Unfinished
 void BlockManager::_endGame()
 {
 	this->unscheduleUpdate();
@@ -292,6 +304,41 @@ void BlockManager::_endGame()
 
 /********************************************************/
 
+//Unfinished
+void BlockManager::_eliminateSingleLine(int lineNum)
+{
+
+} //void BlockManager::_eliminateSingleLine(int lineNum)
+
+//Unfinished
+void BlockManager::_eliminateMultiLine(int startLine)
+{
+
+} //void BlockManager::_eliminateMultiLine(int startLine)
+
+//Unfinished
+void BlockManager::_isTetris(int startLine)
+{
+
+} //void BlockManager::_isTetris(int startLine)
+
+void BlockManager::_rePaintDeadBlocks()
+{
+	this->m_deadBlockBatch->removeAllChildren();
+
+	for (int x = 0; x < CELL_MATRIX_WIDTH; x++)
+	{
+		for (int y = 0; y < CELL_MATRIX_HEIGHT; y++)
+		{
+			if (this->m_cellMatrix[x][y] == CellState::Dead)
+			{
+				CCSprite* temp = CCSprite::createWithTexture(this->m_deadBlockBatch->getTexture());
+				temp->setPosition(this->convertBlockToPixel(ccp(x, y)));
+				this->m_deadBlockBatch->addChild(temp);
+			}
+		}
+	}
+} //void BlockManager::_rePaintDeadBlocks()
 
 
 #pragma endregion
