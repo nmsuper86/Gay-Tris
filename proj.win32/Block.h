@@ -65,8 +65,8 @@ public: //Custom functions
 	
 
 private:
-	virtual void _limitLine(Direction direction);
-	virtual bool _canMove(Direction direction);
+//	virtual void _limitLine(Direction direction);
+//	virtual bool _canMove(Direction direction);
 
 private:
 	CCPoint m_blockData[BLOCK_WIDTH_COUNT][BLOCK_WIDTH_COUNT];

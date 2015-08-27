@@ -39,13 +39,14 @@ bool BlockManager::init()
 	this->addChild(this->m_deadBlockBatch);
 /**********************************************/
 	this->scheduleUpdate();
+//	this->_rePaintDeadBlocks();
 /**********************************************/
 	return true;
 }
 
 void BlockManager::update(float delta)
 {
-	if (this->_shouldBlockTryDrop())
+	if (!this->_shouldBlockTryDrop())
 	{
 		this->_donotTryDrop();
 	}
@@ -167,25 +168,31 @@ bool BlockManager::_currentBlockCanMove(Block::Direction direction)
 
 void BlockManager::_currentBlockDoMove(Block::Direction direction)
 {
-	this->m_currentBlock->doMove(direction);
 	this->_updateCellMatrixForMove(direction);
-//	this->m_currentBlock->resetTimeCounter();
+	this->m_currentBlock->doMove(direction);
+	this->m_currentBlock->setPosition(
+		ccp(this->m_currentBlock->getPositionX(),
+		    this->m_currentBlock->getPositionY() - CELL_SIZE
+		));
 } //void BlockManager::_currentBlockDoDrop()
 
 void BlockManager::_currentBlockStopDrop()
 {
 	this->_updateCellMatrixForDie();
 
-	this->removeChild(m_currentBlock);
+	this->_rePaintDeadBlocks();
+//	this->_eliminateLines();
 
-	this->_eliminateLines();
+// 	this->removeChild(m_currentBlock);
+// 	this->m_currentBlock->release();
+// 	this->m_currentBlock = NULL;
 
-	this->_pushNewBlock();
+//	this->_pushNewBlock();
 
-	if (!this->_canGameContinue())
-	{
-		this->_endGame();
-	}
+// 	if (!this->_canGameContinue())
+// 	{
+// 		this->_endGame();
+// 	}
 }
 
 /********************************************************/
@@ -226,8 +233,6 @@ void BlockManager::_updateCellMatrixForDie()
 	{
 		this->m_cellMatrix[(int)position.points[i].x][(int)position.points[i].y] = BlockManager::CellState::Dead;
 	}
-
-	this->_rePaintDeadBlocks();
 } //void BlockManager::_updateCellMatrixForDie()
 
 int BlockManager::_eliminateLines()
@@ -269,7 +274,6 @@ int BlockManager::_eliminateLines()
 void BlockManager::_pushNewBlock()
 {
 	this->m_currentBlock = this->m_nextBlock;
-	this->addChild(this->m_currentBlock);
 	this->m_currentBlock->setPosition(this->convertBlockToPixel(ccp(CELL_MATRIX_WIDTH / 2, BLOCK_WIDTH_COUNT / 2)));
 
 	Block::CellPosition position = this->m_currentBlock->getCellPosition();
@@ -277,9 +281,11 @@ void BlockManager::_pushNewBlock()
 	{
 		this->m_cellMatrix[(int)position.points[i].x][(int)position.points[i].y] = BlockManager::CellState::Dropping;
 	}
+	this->addChild(this->m_currentBlock);
 
 	this->m_nextBlock = Block::generateNewBlock();
-	this->m_displayManager->nextBlockChanged(this->m_nextBlock);
+	this->m_nextBlock->retain();
+//	this->m_displayManager->nextBlockChanged(this->m_nextBlock);
 } //void BlockManager::_pushNewBlock()
 
 bool BlockManager::_canGameContinue()
@@ -333,7 +339,7 @@ void BlockManager::_rePaintDeadBlocks()
 			if (this->m_cellMatrix[x][y] == CellState::Dead)
 			{
 				CCSprite* temp = CCSprite::createWithTexture(this->m_deadBlockBatch->getTexture());
-				temp->setPosition(this->convertBlockToPixel(ccp(x, y)));
+				temp->setPosition(this->convertRBToCenter(convertBlockToPixel(ccp(x, y))));
 				this->m_deadBlockBatch->addChild(temp);
 			}
 		}

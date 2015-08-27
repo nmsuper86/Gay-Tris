@@ -15,12 +15,12 @@ public:
 	virtual bool init();
 
 public:
-	virtual bool tryTurn90Degrees();
-	virtual bool tryMove(Direction direction);
+//	virtual bool doTurn90Degrees();
+//	virtual bool doMove(Direction direction);
 
 private:
-	virtual void _limitLine(Direction direction);
-	virtual bool _canMove(Direction direction);
+//	virtual void _limitLine(Direction direction);
+//	virtual bool _canMove(Direction direction);
 
 }; //class BlockI
 

@@ -23,12 +23,12 @@ Block::~Block()
 
 bool Block::init()
 {
-
+	return true;
 } //bool Block::init()
 
 bool Block::doTurn90Degrees()
 {
-
+	return false;
 } //bool Block::doTurn90Degrees()
 
 bool Block::doMove(Direction direction)
@@ -45,6 +45,7 @@ bool Block::doMove(Direction direction)
 				}
 			}
 		}
+		
 	}
 	else if (direction == Direction::Left)
 	{
@@ -85,6 +86,7 @@ bool Block::doMove(Direction direction)
 			}
 		}
 	}
+	return true;
 } //bool Block::doMove(Direction direction)
 
 void Block::bindManager(BlockManager* manager)
@@ -95,7 +97,7 @@ void Block::bindManager(BlockManager* manager)
 bool Block::increaseTimeCounter()
 {
 	this->m_timeCounter++;
-	if (this->m_timeCounter == this->m_manager->getUpdateTime())
+	if (this->m_timeCounter >= this->m_manager->getUpdateTime())
 	{
 		this->m_timeCounter = 0;
 		return true;

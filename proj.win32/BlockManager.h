@@ -7,7 +7,7 @@
 
 #define CELL_MATRIX_WIDTH 10
 #define CELL_MATRIX_HEIGHT 15
-#define DEFAULT_REFRESH_TIME 80
+#define DEFAULT_REFRESH_TIME 30
 
 using namespace cocos2d;
 
@@ -23,15 +23,19 @@ public: //系统调用
 
 	virtual void update(float delta); //定时刷新函数
 
-	virtual void pressedLeft();
-	virtual void pressedRight();
-	virtual void pressedDown();
-	virtual void pressedUp();
+// 	virtual void pressedLeft();
+// 	virtual void pressedRight();
+// 	virtual void pressedDown();
+// 	virtual void pressedUp();
 
 public: //公有自定义函数
 	int getUpdateTime(); //获取更新时间
 	void bindDisplayManager(DisplayManger* manager);
 	virtual CCPoint convertBlockToPixel(CCPoint blockPoint); //把网格坐标转化为实际坐标（右下角）
+	virtual inline CCPoint convertRBToCenter(CCPoint rightBottomPoint)
+	{
+		return ccp(rightBottomPoint.x + CELL_SIZE / 2, rightBottomPoint.y + CELL_SIZE / 2);
+	}
 	
 public:
 	typedef enum
