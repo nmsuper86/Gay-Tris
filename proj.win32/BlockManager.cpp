@@ -30,6 +30,7 @@ bool BlockManager::init()
 	//创建第一个块
 	this->m_nextBlock = _createNewBlock();
 	this->m_nextBlock->bindManager(this);
+	this->m_nextBlock->retain();
 
 	//放入第一个块并创建第二个块
 	this->_pushNewBlock();
@@ -38,14 +39,16 @@ bool BlockManager::init()
 	this->m_deadBlockBatch = CCSpriteBatchNode::create("BlockDead.png", CELL_MATRIX_WIDTH * CELL_MATRIX_HEIGHT);
 	this->addChild(this->m_deadBlockBatch);
 /**********************************************/
-	this->scheduleUpdate();
+//	this->scheduleUpdate();
 //	this->_rePaintDeadBlocks();
 /**********************************************/
+
 	return true;
 }
 
 void BlockManager::update(float delta)
 {
+//	CCLog(CCStringMake("UF%d", this)->getCString());
 	if (!this->_shouldBlockTryDrop())
 	{
 		this->_donotTryDrop();
@@ -54,6 +57,7 @@ void BlockManager::update(float delta)
 	{
 		this->_doTryDrop();
 	}
+//	CCLog(CCStringMake("UR%d", this)->getCString());
 } //void BlockManager::update(float delta)
 
 #pragma endregion
@@ -62,7 +66,8 @@ void BlockManager::update(float delta)
 
 int BlockManager::getUpdateTime()
 {
-	return this->m_updateTime;
+	return m_updateTime;
+//	return 30;
 }
 
 void BlockManager::bindDisplayManager(DisplayManger* manager)
@@ -91,7 +96,9 @@ Block* BlockManager::_createNewBlock()
 
 bool BlockManager::_shouldBlockTryDrop()
 {
+//	CCLog(CCStringMake("SF%d %d", this, this->m_currentBlock)->getCString());
 	return this->m_currentBlock->increaseTimeCounter();
+//	CCLog(CCStringMake("SF%d %d", this, this->m_currentBlock)->getCString());
 }
 
 void BlockManager::_donotTryDrop()
@@ -182,12 +189,12 @@ void BlockManager::_currentBlockStopDrop()
 
 	this->_rePaintDeadBlocks();
 //	this->_eliminateLines();
+	m_currentBlock->retain();
+	this->removeChild(m_currentBlock, false);
+//	this->m_currentBlock->release();
+	this->m_currentBlock = NULL;
 
-// 	this->removeChild(m_currentBlock);
-// 	this->m_currentBlock->release();
-// 	this->m_currentBlock = NULL;
-
-//	this->_pushNewBlock();
+	this->_pushNewBlock();
 
 // 	if (!this->_canGameContinue())
 // 	{
@@ -284,6 +291,7 @@ void BlockManager::_pushNewBlock()
 	this->addChild(this->m_currentBlock);
 
 	this->m_nextBlock = Block::generateNewBlock();
+	this->m_nextBlock->bindManager(this);
 	this->m_nextBlock->retain();
 //	this->m_displayManager->nextBlockChanged(this->m_nextBlock);
 } //void BlockManager::_pushNewBlock()
@@ -330,6 +338,7 @@ void BlockManager::_isTetris(int startLine)
 
 void BlockManager::_rePaintDeadBlocks()
 {
+	this->m_deadBlockBatch->setPosition(ccp(0, 0));
 	this->m_deadBlockBatch->removeAllChildren();
 
 	for (int x = 0; x < CELL_MATRIX_WIDTH; x++)

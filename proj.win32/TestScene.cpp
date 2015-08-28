@@ -1,5 +1,5 @@
 #include "TestScene.h"
-#include "BlockManager.h"
+
 
 CCScene* TestScene::scene()
 {
@@ -14,11 +14,21 @@ CCScene* TestScene::scene()
 
 bool TestScene::init()
 {
-	BlockManager* manager = BlockManager::create();
+	this->m_blockManager = BlockManager::create();
 
-	manager->setPosition(ccp(400, 400));
+	m_blockManager->setPosition(ccp(400, 400));
 
-	this->addChild(manager);
+	this->addChild(m_blockManager);
+
+	this->scheduleUpdate();
 
 	return true;
 }
+
+void TestScene::update(float delta)
+{
+	CCLog(CCStringMake("F%d", this->m_blockManager)->getCString());
+	this->m_blockManager->update(delta);
+	CCLog(CCStringMake("R%d", this->m_blockManager)->getCString());
+}
+
