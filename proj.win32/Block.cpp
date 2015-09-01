@@ -96,18 +96,14 @@ void Block::bindManager(BlockManager* manager)
 
 bool Block::increaseTimeCounter()
 {
-//	CCLog(CCStringMake("IF%d %d", this, this->m_manager)->getCString());
 	this->m_timeCounter++;
 	if (this->m_timeCounter >= this->m_manager->getUpdateTime())
 	{
-//		CCLog(CCStringMake("IRT%d %d", this, this->m_manager)->getCString());
 		this->m_timeCounter = 0;
 		return true;
-		
 	}
 	else
 	{
-//		CCLog(CCStringMake("IRF%d %d", this, this->m_manager)->getCString());
 		return false;
 	}
 }// bool Block::increaseTimeCounter()

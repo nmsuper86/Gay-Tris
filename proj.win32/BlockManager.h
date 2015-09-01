@@ -18,8 +18,8 @@ public: //系统调用
 	BlockManager();
 	~BlockManager();
 	
-	CREATE_FUNC(BlockManager);
-	virtual bool init();
+	static BlockManager* create(CCPoint position);
+	virtual bool init(CCPoint position);
 
 	virtual void update(float delta); //定时刷新函数
 
@@ -34,7 +34,8 @@ public: //公有自定义函数
 	virtual CCPoint convertBlockToPixel(CCPoint blockPoint); //把网格坐标转化为实际坐标（右下角）
 	virtual inline CCPoint convertRBToCenter(CCPoint rightBottomPoint)
 	{
-		return ccp(rightBottomPoint.x + CELL_SIZE / 2, rightBottomPoint.y + CELL_SIZE / 2);
+		CCPoint point = ccp(rightBottomPoint.x + CELL_SIZE / 2, rightBottomPoint.y + CELL_SIZE / 2);
+		return point;
 	}
 	
 public:
@@ -60,7 +61,7 @@ private: //私有自定义函数
 	virtual void _updateCellMatrixForMove(Block::Direction direction); //为Block移动更新单元矩阵
 	virtual void _updateCellMatrixForDie(); //为Block死亡更新单元矩阵
 	virtual int _eliminateLines(); //尝试消除
-	virtual bool _canGameContinue(); //判断游戏可否继续进行，方块合法则修改单元矩阵
+	virtual bool _blockOverlayed(Block::CellPosition block1, Block::CellPosition block2); //判断方块是否重叠
 	virtual void _endGame(); //结束游戏
 
 	virtual void _eliminateSingleLine(int lineNum); //消除单行（动画效果,清除数据等）

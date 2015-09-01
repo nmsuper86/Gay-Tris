@@ -13,8 +13,26 @@ BlockManager::~BlockManager()
 
 } //BlockManager::~BlockManager()
 
-bool BlockManager::init()
+BlockManager* BlockManager::create(CCPoint position)
 {
+	BlockManager* pRet = new BlockManager();
+	if (pRet && pRet->init(position))
+	{
+		pRet->autorelease();
+		return pRet;
+	}
+	else
+	{
+		delete pRet;
+		pRet = NULL;
+		return NULL;
+	}
+} //BlockManager* BlockManager::create(CCPoint position)
+
+bool BlockManager::init(CCPoint position)
+{
+	this->setPosition(position);
+
 	//初始化单元状态矩阵
 	for (int x = 0; x < CELL_MATRIX_WIDTH; x++)
 	{
@@ -37,9 +55,11 @@ bool BlockManager::init()
 
 	//初始化已死方块批量精灵
 	this->m_deadBlockBatch = CCSpriteBatchNode::create("BlockDead.png", CELL_MATRIX_WIDTH * CELL_MATRIX_HEIGHT);
+	this->m_deadBlockBatch->setAnchorPoint(ccp(0.5, 0.5));
+	this->m_deadBlockBatch->setPosition(this->getAnchorPoint());
 	this->addChild(this->m_deadBlockBatch);
 /**********************************************/
-//	this->scheduleUpdate();
+	this->scheduleUpdate();
 //	this->_rePaintDeadBlocks();
 /**********************************************/
 
@@ -48,7 +68,6 @@ bool BlockManager::init()
 
 void BlockManager::update(float delta)
 {
-//	CCLog(CCStringMake("UF%d", this)->getCString());
 	if (!this->_shouldBlockTryDrop())
 	{
 		this->_donotTryDrop();
@@ -57,7 +76,6 @@ void BlockManager::update(float delta)
 	{
 		this->_doTryDrop();
 	}
-//	CCLog(CCStringMake("UR%d", this)->getCString());
 } //void BlockManager::update(float delta)
 
 #pragma endregion
@@ -96,9 +114,7 @@ Block* BlockManager::_createNewBlock()
 
 bool BlockManager::_shouldBlockTryDrop()
 {
-//	CCLog(CCStringMake("SF%d %d", this, this->m_currentBlock)->getCString());
 	return this->m_currentBlock->increaseTimeCounter();
-//	CCLog(CCStringMake("SF%d %d", this, this->m_currentBlock)->getCString());
 }
 
 void BlockManager::_donotTryDrop()
@@ -185,21 +201,25 @@ void BlockManager::_currentBlockDoMove(Block::Direction direction)
 
 void BlockManager::_currentBlockStopDrop()
 {
+	Block::CellPosition cellPosition1 = this->m_currentBlock->getCellPosition();
+
 	this->_updateCellMatrixForDie();
 
 	this->_rePaintDeadBlocks();
 //	this->_eliminateLines();
 	m_currentBlock->retain();
 	this->removeChild(m_currentBlock, false);
-//	this->m_currentBlock->release();
+	this->m_currentBlock->release();
 	this->m_currentBlock = NULL;
 
 	this->_pushNewBlock();
 
-// 	if (!this->_canGameContinue())
-// 	{
-// 		this->_endGame();
-// 	}
+	Block::CellPosition cellPosition2 = this->m_currentBlock->getCellPosition();
+
+	if (this->_blockOverlayed(cellPosition1, cellPosition2))
+	{
+		this->_endGame();
+	}
 }
 
 /********************************************************/
@@ -296,24 +316,26 @@ void BlockManager::_pushNewBlock()
 //	this->m_displayManager->nextBlockChanged(this->m_nextBlock);
 } //void BlockManager::_pushNewBlock()
 
-bool BlockManager::_canGameContinue()
+bool BlockManager::_blockOverlayed(Block::CellPosition block1, Block::CellPosition block2)
 {
-	Block::CellPosition position = this->m_currentBlock->getCellPosition();
-	for (int i = 0; i < 4; i++)
+	for (int i1 = 0; i1 < 4; i1++)
 	{
-		if (this->m_cellMatrix[(int)position.points[i].x][(int)position.points[i].y] == BlockManager::CellState::Dead)
+		for (int i2 = 0; i2 < 4; i2++)
 		{
-			return false;
+			if (block1.points[i1].x == block2.points[i2].x && block1.points[i1].y == block2.points[i2].y)
+			{
+				return true;
+			}
 		}
 	}
-	return true;
-
-} //bool BlockManager::_canGameContinue()
+	return false;
+} //bool BlockManager::_blockOverlayed(Block::CellPosition block1, Block::CellPosition block2)
 
 //Unfinished
 void BlockManager::_endGame()
 {
 	this->unscheduleUpdate();
+	CCLog("END");
 } //void BlockManager::_endGame();
 
 /********************************************************/
@@ -338,7 +360,6 @@ void BlockManager::_isTetris(int startLine)
 
 void BlockManager::_rePaintDeadBlocks()
 {
-	this->m_deadBlockBatch->setPosition(ccp(0, 0));
 	this->m_deadBlockBatch->removeAllChildren();
 
 	for (int x = 0; x < CELL_MATRIX_WIDTH; x++)
@@ -349,6 +370,7 @@ void BlockManager::_rePaintDeadBlocks()
 			{
 				CCSprite* temp = CCSprite::createWithTexture(this->m_deadBlockBatch->getTexture());
 				temp->setPosition(this->convertRBToCenter(convertBlockToPixel(ccp(x, y))));
+//				CCLog(CCString::createWithFormat("OUT %f %f", temp->getPositionX(), temp->getPositionY())->getCString());
 				this->m_deadBlockBatch->addChild(temp);
 			}
 		}

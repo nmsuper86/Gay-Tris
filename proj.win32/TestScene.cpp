@@ -14,21 +14,17 @@ CCScene* TestScene::scene()
 
 bool TestScene::init()
 {
-	this->m_blockManager = BlockManager::create();
-
-	m_blockManager->setPosition(ccp(400, 400));
+	this->m_blockManager = BlockManager::create(ccp(100, 200));
 
 	this->addChild(m_blockManager);
 
-	this->scheduleUpdate();
+//	this->scheduleUpdate();
 
 	return true;
 }
 
 void TestScene::update(float delta)
 {
-	CCLog(CCStringMake("F%d", this->m_blockManager)->getCString());
 	this->m_blockManager->update(delta);
-	CCLog(CCStringMake("R%d", this->m_blockManager)->getCString());
 }
 
