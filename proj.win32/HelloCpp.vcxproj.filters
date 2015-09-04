@@ -90,6 +90,12 @@
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene\TestScene</Filter>
     </ClCompile>
+    <ClCompile Include="BlockL.cpp">
+      <Filter>Entity\Block\BlockL</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockLR.cpp">
+      <Filter>Entity\Block\BlockLR</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -118,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="TestScene.h">
       <Filter>Scene\TestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockL.h">
+      <Filter>Entity\Block\BlockL</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockLR.h">
+      <Filter>Entity\Block\BlockLR</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

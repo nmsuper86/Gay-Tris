@@ -2,6 +2,8 @@
 #include "AppDelegate.h"
 #include "CCEGLView.h"
 
+#include "..\proj.win32\TestScene.h"
+
 USING_NS_CC;
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,

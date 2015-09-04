@@ -58,8 +58,12 @@ bool BlockManager::init(CCPoint position)
 	this->m_deadBlockBatch->setAnchorPoint(ccp(0.5, 0.5));
 	this->m_deadBlockBatch->setPosition(this->getAnchorPoint());
 	this->addChild(this->m_deadBlockBatch);
+
+	//³õÊ¼»¯¼üÅÌ¿ØÖÆ
+	this->m_keyDown = false;
+
 /**********************************************/
-	this->scheduleUpdate();
+//	this->scheduleUpdate();
 //	this->_rePaintDeadBlocks();
 /**********************************************/
 
@@ -77,6 +81,39 @@ void BlockManager::update(float delta)
 		this->_doTryDrop();
 	}
 } //void BlockManager::update(float delta)
+
+void BlockManager::pressedDown()
+{
+	if (!this->m_keyDown)
+	{
+		CCLog("Down");
+	}
+} //void BlockManager::pressedDown()
+
+void BlockManager::pressedLeft()
+{
+	if (!this->m_keyDown)
+	{
+		CCLog("Left");
+	}
+} //void BlockManager::pressedLeft()
+
+void BlockManager::pressedRight()
+{
+	if (!this->m_keyDown)
+	{
+		CCLog("Right");
+	}
+} //void BlockManager::pressedRight()
+
+void BlockManager::pressedUp()
+{
+	if (!this->m_keyDown)
+	{
+		CCLog("Up");
+	}
+} //void BlockManager::pressedUp()
+
 
 #pragma endregion
 
@@ -100,6 +137,11 @@ CCPoint BlockManager::convertBlockToPixel(CCPoint blockPoint)
 	resultPoint.y = this->getPositionY() + CELL_MATRIX_HEIGHT / 2 * CELL_SIZE - blockPoint.y * CELL_SIZE;
 	return resultPoint;
 } //CCPoint BlockManager::convertBlockToPixel(CCPoint blockPoint)
+
+void BlockManager::setKeyDownState(bool keyDownState)
+{
+	this->m_keyDown = keyDownState;
+} //void BlockManager::setKeyDownState(bool keyDownState)
 
 #pragma endregion
 
@@ -301,7 +343,7 @@ int BlockManager::_eliminateLines()
 void BlockManager::_pushNewBlock()
 {
 	this->m_currentBlock = this->m_nextBlock;
-	this->m_currentBlock->setPosition(this->convertBlockToPixel(ccp(CELL_MATRIX_WIDTH / 2, BLOCK_WIDTH_COUNT / 2)));
+	this->m_currentBlock->setPosition(this->convertBlockToPixel(ccp(CELL_MATRIX_WIDTH / 2, BLOCK_WIDTH_COUNT / 2 - 1)));
 
 	Block::CellPosition position = this->m_currentBlock->getCellPosition();
 	for (int i = 0; i < 4; i++)

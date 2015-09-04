@@ -1,6 +1,8 @@
 #include "Block.h"
 #include "BlockManager.h"
 #include "BlockI.h"
+#include "BlockL.h"
+#include "BlockLR.h"
 
 Block::Block()
 {
@@ -112,7 +114,7 @@ Block* Block::generateNewBlock()
 {
 	Block* block = NULL;
 
-	block = BlockI::create();
+	block = BlockLR::create();
 
 	return block;
 }

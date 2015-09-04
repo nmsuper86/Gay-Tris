@@ -23,10 +23,10 @@ public: //系统调用
 
 	virtual void update(float delta); //定时刷新函数
 
-// 	virtual void pressedLeft();
-// 	virtual void pressedRight();
-// 	virtual void pressedDown();
-// 	virtual void pressedUp();
+	virtual void pressedLeft();
+	virtual void pressedRight();
+	virtual void pressedDown();
+	virtual void pressedUp();
 
 public: //公有自定义函数
 	int getUpdateTime(); //获取更新时间
@@ -37,6 +37,7 @@ public: //公有自定义函数
 		CCPoint point = ccp(rightBottomPoint.x + CELL_SIZE / 2, rightBottomPoint.y + CELL_SIZE / 2);
 		return point;
 	}
+	void setKeyDownState(bool keyDownState); //设定按键按下状态 
 	
 public:
 	typedef enum
@@ -83,6 +84,7 @@ private: //私有自定义函数
 
 private:
 	int m_updateTime;
+	bool m_keyDown;
 
 	Block* m_currentBlock;
 	Block* m_nextBlock;
