@@ -56,10 +56,10 @@ public: //Custom functions
 	virtual bool doMove(Direction direction);
 	void bindManager(BlockManager* manager);
 //	void setIndexInArray(int index);
-	bool increaseTimeCounter(); //时间自增后返回是否需要更新位置
+	bool increaseTimeCounter(int updateTime); //时间自增后返回是否需要更新位置
 	static Block* generateNewBlock();
 	CellPosition getCellPosition();
-//	void resetTimeCounter();
+	void resetTimeCounter(); //重置计数器
 	void initializeBlock(); //初始化方块内的数据
 	void setBlockData(CCPoint blockPoint, CCPoint stagePoint); //子类通过此函数设定blockData矩阵中的坐标值
 	

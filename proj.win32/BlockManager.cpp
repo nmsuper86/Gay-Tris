@@ -72,21 +72,21 @@ bool BlockManager::init(CCPoint position)
 
 void BlockManager::update(float delta)
 {
-	if (!this->_shouldBlockTryDrop())
+	if (!this->_shouldBlockTryDrop(this->m_updateTime))
 	{
 		this->_donotTryDrop();
 	}
 	else
 	{
-		this->_doTryDrop();
+		this->_doTryUpdateDrop();
 	}
 } //void BlockManager::update(float delta)
 
 void BlockManager::pressedDown()
 {
-	if (!this->m_keyDown)
+	//if (!this->m_keyDown)
 	{
-		CCLog("Down");
+		this->_doTryRequiredDrop();
 	}
 } //void BlockManager::pressedDown()
 
@@ -94,7 +94,7 @@ void BlockManager::pressedLeft()
 {
 	if (!this->m_keyDown)
 	{
-		CCLog("Left");
+		this->_doTryMove(Block::Direction::Left);
 	}
 } //void BlockManager::pressedLeft()
 
@@ -102,7 +102,7 @@ void BlockManager::pressedRight()
 {
 	if (!this->m_keyDown)
 	{
-		CCLog("Right");
+		this->_doTryMove(Block::Direction::Right);
 	}
 } //void BlockManager::pressedRight()
 
@@ -154,9 +154,9 @@ Block* BlockManager::_createNewBlock()
 
 /*******************************************************/
 
-bool BlockManager::_shouldBlockTryDrop()
+bool BlockManager::_shouldBlockTryDrop(int updateTime)
 {
-	return this->m_currentBlock->increaseTimeCounter();
+	return this->m_currentBlock->increaseTimeCounter(updateTime);
 }
 
 void BlockManager::_donotTryDrop()
@@ -164,7 +164,7 @@ void BlockManager::_donotTryDrop()
 	//Nothing
 } //void BlockManager::_donotTryDrop()
 
-void BlockManager::_doTryDrop()
+void BlockManager::_doTryUpdateDrop()
 {
 	if (this->_currentBlockCanMove(Block::Direction::Down))
 	{
@@ -175,6 +175,26 @@ void BlockManager::_doTryDrop()
 		this->_currentBlockStopDrop();
 	}
 } //void BlockManager::_doTryDrop()
+
+void BlockManager::_doTryMove(Block::Direction direction)
+{
+	if (this->_currentBlockCanMove(direction))
+	{
+		this->_currentBlockDoMove(direction);
+	}
+} //void BlockManager::_doTryMove(Block::Direction direction)
+
+void BlockManager::_doTryRequiredDrop()
+{
+	if (!this->_shouldBlockTryDrop(REQUIRED_UPDATE_TIME))
+	{
+		this->_donotTryDrop();
+	}
+	else
+	{
+		this->_doTryUpdateDrop();
+	}
+} //void BlockManager::_doTryRequiredDrop()
 
 /********************************************************/
 
@@ -235,10 +255,27 @@ void BlockManager::_currentBlockDoMove(Block::Direction direction)
 {
 	this->_updateCellMatrixForMove(direction);
 	this->m_currentBlock->doMove(direction);
-	this->m_currentBlock->setPosition(
-		ccp(this->m_currentBlock->getPositionX(),
-		    this->m_currentBlock->getPositionY() - CELL_SIZE
-		));
+
+	if (direction == Block::Direction::Down)
+	{
+		float y = this->m_currentBlock->getPositionY();
+		this->m_currentBlock->setPositionY((int)y - CELL_SIZE);
+	}
+	else if (direction == Block::Direction::Left)
+	{
+		float x = this->m_currentBlock->getPositionX();
+		this->m_currentBlock->setPositionX((int)x - CELL_SIZE);
+	}
+	else if (direction == Block::Direction::Right)
+	{
+		float x = this->m_currentBlock->getPositionX();
+		this->m_currentBlock->setPositionX((int)x + CELL_SIZE);
+	}
+	else
+	{
+		float y = this->m_currentBlock->getPositionY();
+		this->m_currentBlock->setPositionY((int)y + CELL_SIZE);
+	}
 } //void BlockManager::_currentBlockDoDrop()
 
 void BlockManager::_currentBlockStopDrop()

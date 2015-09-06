@@ -141,6 +141,10 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="BlockL.cpp" />
     <ClCompile Include="BlockLR.cpp" />
     <ClCompile Include="BlockManager.cpp" />
+    <ClCompile Include="BlockO.cpp" />
+    <ClCompile Include="BlockT.cpp" />
+    <ClCompile Include="BlockZ.cpp" />
+    <ClCompile Include="BlockZR.cpp" />
     <ClCompile Include="DisplayManager.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="main.cpp" />
@@ -154,6 +158,10 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="BlockL.h" />
     <ClInclude Include="BlockLR.h" />
     <ClInclude Include="BlockManager.h" />
+    <ClInclude Include="BlockO.h" />
+    <ClInclude Include="BlockT.h" />
+    <ClInclude Include="BlockZ.h" />
+    <ClInclude Include="BlockZR.h" />
     <ClInclude Include="DisplayManager.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="main.h" />

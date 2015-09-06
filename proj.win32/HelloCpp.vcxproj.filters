@@ -96,6 +96,18 @@
     <ClCompile Include="BlockLR.cpp">
       <Filter>Entity\Block\BlockLR</Filter>
     </ClCompile>
+    <ClCompile Include="BlockO.cpp">
+      <Filter>Entity\Block\BlockO</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockT.cpp">
+      <Filter>Entity\Block\BlockT</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockZ.cpp">
+      <Filter>Entity\Block\BlockZ</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockZR.cpp">
+      <Filter>Entity\Block\BlockZR</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -130,6 +142,18 @@
     </ClInclude>
     <ClInclude Include="BlockLR.h">
       <Filter>Entity\Block\BlockLR</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockO.h">
+      <Filter>Entity\Block\BlockO</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockT.h">
+      <Filter>Entity\Block\BlockT</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockZ.h">
+      <Filter>Entity\Block\BlockZ</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockZR.h">
+      <Filter>Entity\Block\BlockZR</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,6 +3,10 @@
 #include "BlockI.h"
 #include "BlockL.h"
 #include "BlockLR.h"
+#include "BlockO.h"
+#include "BlockT.h"
+#include "BlockZ.h"
+#include "BlockZR.h"
 
 Block::Block()
 {
@@ -96,10 +100,10 @@ void Block::bindManager(BlockManager* manager)
 	this->m_manager = manager;
 } //void Block::bindManager(BlockManager* manager)
 
-bool Block::increaseTimeCounter()
+bool Block::increaseTimeCounter(int updateTime)
 {
 	this->m_timeCounter++;
-	if (this->m_timeCounter >= this->m_manager->getUpdateTime())
+	if (this->m_timeCounter >= updateTime)
 	{
 		this->m_timeCounter = 0;
 		return true;
@@ -114,7 +118,41 @@ Block* Block::generateNewBlock()
 {
 	Block* block = NULL;
 
-	block = BlockLR::create();
+	int blockType = CCRANDOM_0_1() * 7;
+
+	switch (blockType)
+	{
+	case 0:
+		block = BlockI::create();
+		break;
+
+	case 1:
+		block = BlockL::create();
+		break;
+
+	case 2:
+		block = BlockLR::create();
+		break;
+
+	case 3:
+		block = BlockO::create();
+		break;
+
+	case 4:
+		block = BlockT::create();
+		break;
+
+	case 5:
+		block = BlockZ::create();
+		break;
+
+	case 6:
+		block = BlockZR::create();
+		break;
+
+	default:
+		break;
+	}
 
 	return block;
 }

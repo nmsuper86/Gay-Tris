@@ -22,4 +22,4 @@ private:
 
 }; //class BlockLR: public Block
 
-#endif
+#endif //__BLOCK_L_R_H__

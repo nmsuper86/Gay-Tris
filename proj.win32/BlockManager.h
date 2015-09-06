@@ -6,8 +6,9 @@
 #include "DisplayManager.h"
 
 #define CELL_MATRIX_WIDTH 10
-#define CELL_MATRIX_HEIGHT 15
+#define CELL_MATRIX_HEIGHT 20
 #define DEFAULT_REFRESH_TIME 30
+#define REQUIRED_UPDATE_TIME 4
 
 using namespace cocos2d;
 
@@ -51,9 +52,11 @@ private: //私有自定义函数
 	virtual Block* _createNewBlock(); //生成新的方块
 	virtual void _pushNewBlock(); //生成新的nextBlock 修改Stage矩阵 并把原nextBlock推上舞台
 
-	virtual bool _shouldBlockTryDrop(); //判断当前方块是否应该下落一次
+	virtual bool _shouldBlockTryDrop(int updateTime); //判断当前方块是否应该下落一次
 	virtual void _donotTryDrop(); //不尝试下落
-	virtual void _doTryDrop(); //尝试下落
+	virtual void _doTryUpdateDrop(); //尝试定时下落
+	virtual void _doTryMove(Block::Direction direction); //尝试平移
+	virtual void _doTryRequiredDrop(); //尝试触发下落
 
 	virtual bool _currentBlockCanMove(Block::Direction direction); //判断方块是否可以向特定方向移动
 	virtual void _currentBlockDoMove(Block::Direction direction); //使当前方块移动
