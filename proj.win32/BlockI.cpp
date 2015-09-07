@@ -18,5 +18,6 @@ bool BlockI::init()
 	{
 		this->setBlockData(ccp(i, 1), ccp(CELL_MATRIX_WIDTH / 2 - BLOCK_WIDTH_COUNT / 2 + i, 1));
 	}
+	this->m_type = BlockType::I;
 	return true;
 } //bool BlockI::init()

@@ -31,13 +31,6 @@ public:
 	}Direction;
 	typedef enum
 	{
-		D0    = 0,
-		D90   = 90,
-		D180  = 180,
-		D270  = 270
-	}Degree;
-	typedef enum
-	{
 		I,
 		L,
 		L_Reverse,
@@ -52,7 +45,7 @@ public:
 	}CellPosition;
 
 public: //Custom functions
-	virtual bool doTurn90Degrees();
+	virtual CellPosition doTurn90Degrees(bool saveState); //旋转方块并返回旋转后的位置信息 saveState代表是否保存旋转后的结果
 	virtual bool doMove(Direction direction);
 	void bindManager(BlockManager* manager);
 //	void setIndexInArray(int index);
@@ -62,18 +55,21 @@ public: //Custom functions
 	void resetTimeCounter(); //重置计数器
 	void initializeBlock(); //初始化方块内的数据
 	void setBlockData(CCPoint blockPoint, CCPoint stagePoint); //子类通过此函数设定blockData矩阵中的坐标值
+	BlockType getBlockType();
+	int getDegree();
 	
 
 private:
 //	virtual void _limitLine(Direction direction);
 //	virtual bool _canMove(Direction direction);
 
-private:
+protected:
 	CCPoint m_blockData[BLOCK_WIDTH_COUNT][BLOCK_WIDTH_COUNT];
 	BlockManager* m_manager;
 	BlockType m_type;
 	int m_timeCounter;
-	CCPoint m_position; //以精灵中心为基准 在管理器中 对应方块右下角的位置
+//	CCPoint m_position; //以精灵中心为基准 在管理器中 对应方块右下角的位置
+	int m_degree;
 //	int m_indexInArray;
 
 }; //class Block

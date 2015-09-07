@@ -57,13 +57,17 @@ private: //私有自定义函数
 	virtual void _doTryUpdateDrop(); //尝试定时下落
 	virtual void _doTryMove(Block::Direction direction); //尝试平移
 	virtual void _doTryRequiredDrop(); //尝试触发下落
+	virtual void _doTryTurn90Degrees(); //尝试旋转90度
 
 	virtual bool _currentBlockCanMove(Block::Direction direction); //判断方块是否可以向特定方向移动
 	virtual void _currentBlockDoMove(Block::Direction direction); //使当前方块移动
 	virtual void _currentBlockStopDrop(); //停止当前方块下落
+	virtual bool _currentBlockCanTurn90Degrees(); //判断方块是否可以旋转90度
+	virtual void _currentBlockDoTurn90Degrees(); //使当前方块旋转
 
-	virtual void _updateCellMatrixForMove(Block::Direction direction); //为Block移动更新单元矩阵
-	virtual void _updateCellMatrixForDie(); //为Block死亡更新单元矩阵
+	virtual void _updateCellMatrixBeforeMove(Block::Direction direction); //为Block移动更新单元矩阵
+	virtual void _updateCellMatrixBeforeDie(); //为Block死亡更新单元矩阵
+	virtual void _updateCellMatrixAfterChanged(Block::CellPosition originalPosition, Block::CellPosition newPosition); //用position更新矩阵
 	virtual int _eliminateLines(); //尝试消除
 	virtual bool _blockOverlayed(Block::CellPosition block1, Block::CellPosition block2); //判断方块是否重叠
 	virtual void _endGame(); //结束游戏

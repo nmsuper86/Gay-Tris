@@ -110,7 +110,7 @@ void BlockManager::pressedUp()
 {
 	if (!this->m_keyDown)
 	{
-		CCLog("Up");
+		this->_doTryTurn90Degrees();
 	}
 } //void BlockManager::pressedUp()
 
@@ -196,6 +196,18 @@ void BlockManager::_doTryRequiredDrop()
 	}
 } //void BlockManager::_doTryRequiredDrop()
 
+void BlockManager::_doTryTurn90Degrees()
+{
+	Block::BlockType blockType = this->m_currentBlock->getBlockType();
+	if (blockType != Block::O)
+	{
+		if (this->_currentBlockCanTurn90Degrees())
+		{
+			this->_currentBlockDoTurn90Degrees();
+		}
+	}
+} //void BlockManager::_doTryTurn90Degrees()
+
 /********************************************************/
 
 bool BlockManager::_currentBlockCanMove(Block::Direction direction)
@@ -253,7 +265,7 @@ bool BlockManager::_currentBlockCanMove(Block::Direction direction)
 
 void BlockManager::_currentBlockDoMove(Block::Direction direction)
 {
-	this->_updateCellMatrixForMove(direction);
+	this->_updateCellMatrixBeforeMove(direction);
 	this->m_currentBlock->doMove(direction);
 
 	if (direction == Block::Direction::Down)
@@ -282,7 +294,7 @@ void BlockManager::_currentBlockStopDrop()
 {
 	Block::CellPosition cellPosition1 = this->m_currentBlock->getCellPosition();
 
-	this->_updateCellMatrixForDie();
+	this->_updateCellMatrixBeforeDie();
 
 	this->_rePaintDeadBlocks();
 //	this->_eliminateLines();
@@ -301,9 +313,47 @@ void BlockManager::_currentBlockStopDrop()
 	}
 }
 
+bool BlockManager::_currentBlockCanTurn90Degrees()
+{
+	if (this->m_currentBlock->getBlockType() == Block::BlockType::O)
+	{
+		return false;
+	}
+
+	Block::CellPosition turnedPosition = this->m_currentBlock->doTurn90Degrees(false);
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (turnedPosition.points[i].x < 0 || 
+			turnedPosition.points[i].y < 0 ||
+			turnedPosition.points[i].x > CELL_MATRIX_WIDTH - 1 || 
+			turnedPosition.points[i].y > CELL_MATRIX_HEIGHT - 1 ||
+			this->m_cellMatrix[(int)turnedPosition.points[i].x][(int)turnedPosition.points[i].y] == BlockManager::CellState::Dead)
+		{
+			return false;
+		}
+	}
+
+	return true;
+
+} //bool BlockManager::_currentBlockCanTurn90Degrees()
+
+void BlockManager::_currentBlockDoTurn90Degrees()
+{
+ 	Block::CellPosition originalPosition = this->m_currentBlock->getCellPosition();
+
+	this->m_currentBlock->doTurn90Degrees(true);
+
+	Block::CellPosition newPosition = this->m_currentBlock->getCellPosition();
+
+	this->_updateCellMatrixAfterChanged(originalPosition, newPosition);
+
+	this->m_currentBlock->getSprite()->setRotation(this->m_currentBlock->getDegree());
+} //void BlockManager::_currentBlockDoTurn90Degrees()
+
 /********************************************************/
 
-void BlockManager::_updateCellMatrixForMove(Block::Direction direction)
+void BlockManager::_updateCellMatrixBeforeMove(Block::Direction direction)
 {
 	Block::CellPosition position = this->m_currentBlock->getCellPosition();
 
@@ -331,7 +381,7 @@ void BlockManager::_updateCellMatrixForMove(Block::Direction direction)
 	
 } //void BlockManager::_updateCellMatrixForMove()
 
-void BlockManager::_updateCellMatrixForDie()
+void BlockManager::_updateCellMatrixBeforeDie()
 {
 	Block::CellPosition position = this->m_currentBlock->getCellPosition();
 
@@ -340,6 +390,18 @@ void BlockManager::_updateCellMatrixForDie()
 		this->m_cellMatrix[(int)position.points[i].x][(int)position.points[i].y] = BlockManager::CellState::Dead;
 	}
 } //void BlockManager::_updateCellMatrixForDie()
+
+void BlockManager::_updateCellMatrixAfterChanged(Block::CellPosition originalPosition, Block::CellPosition newPosition)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		this->m_cellMatrix[(int)originalPosition.points[i].x][(int)originalPosition.points[i].y] = CellState::Empty;
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		this->m_cellMatrix[(int)newPosition.points[i].x][(int)newPosition.points[i].y] = CellState::Dropping;
+	}
+}
 
 int BlockManager::_eliminateLines()
 {
