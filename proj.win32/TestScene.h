@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "BlockManager.h"
+#include "DisplayManager.h"
 #include <windows.h>
 
 using namespace cocos2d;
@@ -24,6 +25,7 @@ public:
 
 private:
 	BlockManager* m_blockManager;
+	DisplayManger* m_displayManager;
 
 	static TestScene* m_scene;
 	

@@ -13,10 +13,10 @@ BlockManager::~BlockManager()
 
 } //BlockManager::~BlockManager()
 
-BlockManager* BlockManager::create(CCPoint position)
+BlockManager* BlockManager::create(CCPoint position, DisplayManger* displayManager)
 {
 	BlockManager* pRet = new BlockManager();
-	if (pRet && pRet->init(position))
+	if (pRet && pRet->init(position, displayManager))
 	{
 		pRet->autorelease();
 		return pRet;
@@ -29,9 +29,15 @@ BlockManager* BlockManager::create(CCPoint position)
 	}
 } //BlockManager* BlockManager::create(CCPoint position)
 
-bool BlockManager::init(CCPoint position)
+bool BlockManager::init(CCPoint position, DisplayManger* displayManager)
 {
 	this->setPosition(position);
+
+	this->m_displayManager = displayManager;
+
+	CCSprite* backgroundImage = CCSprite::create("Background.png");
+//	backgroundImage->setPosition(this->getPosition());
+	this->addChild(backgroundImage);
 
 	//初始化单元状态矩阵
 	for (int x = 0; x < CELL_MATRIX_WIDTH; x++)
@@ -39,6 +45,7 @@ bool BlockManager::init(CCPoint position)
 		for (int y = 0; y < CELL_MATRIX_HEIGHT; y++)
 		{
 			this->m_cellMatrix[x][y] = BlockManager::CellState::Empty;
+			this->m_deadSprites[x][y] = NULL;
 		}
 	}
 
@@ -63,7 +70,7 @@ bool BlockManager::init(CCPoint position)
 	this->m_keyDown = false;
 
 /**********************************************/
-//	this->scheduleUpdate();
+	this->scheduleUpdate();
 //	this->_rePaintDeadBlocks();
 /**********************************************/
 
@@ -125,6 +132,11 @@ int BlockManager::getUpdateTime()
 //	return 30;
 }
 
+void BlockManager::setUpdateTime(int time)
+{
+	this->m_updateTime = time;
+} //void BlockManager::setUpdateTime(int time)
+
 void BlockManager::bindDisplayManager(DisplayManger* manager)
 {
 	this->m_displayManager = manager;
@@ -133,8 +145,8 @@ void BlockManager::bindDisplayManager(DisplayManger* manager)
 CCPoint BlockManager::convertBlockToPixel(CCPoint blockPoint)
 {
 	CCPoint resultPoint;
-	resultPoint.x = this->getPositionX() - CELL_MATRIX_WIDTH / 2 * CELL_SIZE + blockPoint.x * CELL_SIZE;
-	resultPoint.y = this->getPositionY() + CELL_MATRIX_HEIGHT / 2 * CELL_SIZE - blockPoint.y * CELL_SIZE;
+	resultPoint.x = -CELL_MATRIX_WIDTH / 2 * CELL_SIZE + blockPoint.x * CELL_SIZE;
+	resultPoint.y = CELL_MATRIX_HEIGHT / 2 * CELL_SIZE - (blockPoint.y + 1) * CELL_SIZE; 
 	return resultPoint;
 } //CCPoint BlockManager::convertBlockToPixel(CCPoint blockPoint)
 
@@ -297,10 +309,10 @@ void BlockManager::_currentBlockStopDrop()
 	this->_updateCellMatrixBeforeDie();
 
 	this->_rePaintDeadBlocks();
-//	this->_eliminateLines();
-	m_currentBlock->retain();
+	this->_eliminateLines();
+
 	this->removeChild(m_currentBlock, false);
-	this->m_currentBlock->release();
+
 	this->m_currentBlock = NULL;
 
 	this->_pushNewBlock();
@@ -406,33 +418,21 @@ void BlockManager::_updateCellMatrixAfterChanged(Block::CellPosition originalPos
 int BlockManager::_eliminateLines()
 {
 	int lineCounter = 0;
-	int lineNums[4];
-	for (int i = CELL_MATRIX_HEIGHT - 1; i >= 0; i--)
+	int lineNums[BLOCK_WIDTH_COUNT];
+
+	for (int i = 0; i < CELL_MATRIX_HEIGHT; i++)
 	{
 		if (this->_isLineFilled(i))
 		{
 			lineNums[lineCounter] = i;
-			lineCounter++;
 			this->_eliminateSingleLine(i);
-			this->m_displayManager->lineEliminated();
-		}
-	}
-
-	if (lineCounter > 1)
-	{
-		if (lineCounter == 4)
-		{
-			this->_isTetris(lineNums[3]);
-		}
-		else
-		{
-			int startLineNum = (lineNums[0] + lineNums[lineCounter - 1]) / 2;
-			this->_eliminateMultiLine(startLineNum);
+			lineCounter++;
 		}
 	}
 
 	if (lineCounter > 0)
 	{
+		this->m_displayManager->lineEliminated(lineCounter, this);
 		this->_rePaintDeadBlocks();
 	}
 	
@@ -454,7 +454,7 @@ void BlockManager::_pushNewBlock()
 	this->m_nextBlock = Block::generateNewBlock();
 	this->m_nextBlock->bindManager(this);
 	this->m_nextBlock->retain();
-//	this->m_displayManager->nextBlockChanged(this->m_nextBlock);
+	this->m_displayManager->nextBlockChanged(this->m_nextBlock);
 } //void BlockManager::_pushNewBlock()
 
 bool BlockManager::_blockOverlayed(Block::CellPosition block1, Block::CellPosition block2)
@@ -484,14 +484,28 @@ void BlockManager::_endGame()
 //Unfinished
 void BlockManager::_eliminateSingleLine(int lineNum)
 {
-
+//	this->_performMovingAnimetionHorizontal(lineNum);
+	for (int x = 0; x < CELL_MATRIX_WIDTH; x++)
+	{
+		for (int y = lineNum; y >= 0; y--)
+		{
+			if (y == 0)
+			{
+				this->m_cellMatrix[x][y] = BlockManager::CellState::Empty;
+				this->m_deadSprites[x][y] = NULL;
+			}
+			else
+			{
+				this->m_cellMatrix[x][y] = this->m_cellMatrix[x][y - 1];
+// 				if (this->m_deadSprites[x][y])
+// 				{
+// 					this->m_deadSprites[x][y]->release();
+// 				}
+				this->m_deadSprites[x][y] = this->m_deadSprites[x][y - 1];
+			}
+		}
+	}
 } //void BlockManager::_eliminateSingleLine(int lineNum)
-
-//Unfinished
-void BlockManager::_eliminateMultiLine(int startLine)
-{
-
-} //void BlockManager::_eliminateMultiLine(int startLine)
 
 //Unfinished
 void BlockManager::_isTetris(int startLine)
@@ -507,16 +521,36 @@ void BlockManager::_rePaintDeadBlocks()
 	{
 		for (int y = 0; y < CELL_MATRIX_HEIGHT; y++)
 		{
+// 			if (this->m_deadSprites[x][y])
+// 			{
+// //				this->m_deadSprites[x][y]->release();
+// 				this->m_deadSprites[x][y] = NULL;
+// 			}
+
 			if (this->m_cellMatrix[x][y] == CellState::Dead)
 			{
 				CCSprite* temp = CCSprite::createWithTexture(this->m_deadBlockBatch->getTexture());
 				temp->setPosition(this->convertRBToCenter(convertBlockToPixel(ccp(x, y))));
-//				CCLog(CCString::createWithFormat("OUT %f %f", temp->getPositionX(), temp->getPositionY())->getCString());
 				this->m_deadBlockBatch->addChild(temp);
+				this->m_deadSprites[x][y] = temp;
 			}
 		}
 	}
+
+	CCLog("");
 } //void BlockManager::_rePaintDeadBlocks()
 
+void BlockManager::_performMovingAnimetionHorizontal(int lineNum)
+{
+	CCMoveBy* moveAway = CCMoveBy::create(0.3f, ccp(0, -300));
+	CCFadeOut* fadeOut = CCFadeOut::create(0.4f);
 
-#pragma endregion
+	CCSpawn* effect = CCSpawn::create(moveAway, fadeOut, NULL);
+
+	for (int i = 0; i < CELL_MATRIX_WIDTH; i++)
+	{
+		this->m_deadSprites[i][lineNum]->runAction(effect);
+	}
+} //void BlockManager::_performAnimetion(int lineNum)
+
+#pragma endre

@@ -17,11 +17,15 @@ CCScene* TestScene::scene()
 
 bool TestScene::init()
 {
-	this->m_blockManager = BlockManager::create(ccp(100, 200));
+	this->m_displayManager = DisplayManger::create();
+
+	this->m_displayManager->setPosition(650, 270);
+
+	this->addChild(this->m_displayManager);
+
+	this->m_blockManager = BlockManager::create(ccp(250, 300), m_displayManager);
 
 	this->addChild(m_blockManager);
-
-	this->scheduleUpdate();
 
 	CCDirector::sharedDirector()->getOpenGLView()->setAccelerometerKeyHook(TestScene::keyboardHook);
 

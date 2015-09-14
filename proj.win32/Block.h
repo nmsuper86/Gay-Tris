@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "Entity.h"
 
-#define CELL_SIZE 40
+#define CELL_SIZE 25
 #define BLOCK_WIDTH_COUNT 4
 
 using namespace cocos2d;

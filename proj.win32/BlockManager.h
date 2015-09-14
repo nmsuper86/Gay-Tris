@@ -7,8 +7,8 @@
 
 #define CELL_MATRIX_WIDTH 10
 #define CELL_MATRIX_HEIGHT 20
-#define DEFAULT_REFRESH_TIME 30
-#define REQUIRED_UPDATE_TIME 4
+#define DEFAULT_REFRESH_TIME 80
+#define REQUIRED_UPDATE_TIME 2
 
 using namespace cocos2d;
 
@@ -19,8 +19,8 @@ public: //系统调用
 	BlockManager();
 	~BlockManager();
 	
-	static BlockManager* create(CCPoint position);
-	virtual bool init(CCPoint position);
+	static BlockManager* create(CCPoint position, DisplayManger* displayManager);
+	virtual bool init(CCPoint position, DisplayManger* displayManager);
 
 	virtual void update(float delta); //定时刷新函数
 
@@ -31,6 +31,7 @@ public: //系统调用
 
 public: //公有自定义函数
 	int getUpdateTime(); //获取更新时间
+	void setUpdateTime(int time);
 	void bindDisplayManager(DisplayManger* manager);
 	virtual CCPoint convertBlockToPixel(CCPoint blockPoint); //把网格坐标转化为实际坐标（右下角）
 	virtual inline CCPoint convertRBToCenter(CCPoint rightBottomPoint)
@@ -39,6 +40,7 @@ public: //公有自定义函数
 		return point;
 	}
 	void setKeyDownState(bool keyDownState); //设定按键按下状态 
+	
 	
 public:
 	typedef enum
@@ -73,23 +75,23 @@ private: //私有自定义函数
 	virtual void _endGame(); //结束游戏
 
 	virtual void _eliminateSingleLine(int lineNum); //消除单行（动画效果,清除数据等）
-	virtual inline bool _isLineFilled(int linNum)
+	virtual inline bool _isLineFilled(int lineNum)
 	{
 		for (int i = 0; i < CELL_MATRIX_WIDTH; i++)
 		{
-			if (this->m_cellMatrix[linNum][i] != BlockManager::CellState::Dead)
+			if (this->m_cellMatrix[i][lineNum] != BlockManager::CellState::Dead)
 			{
 				return false;
 			}
 		}
 		return true;
 	} //判断该行是否已满
-	virtual void _eliminateMultiLine(int startLine); //多行连续消除的动画
 	virtual void _isTetris(int startLine); //Tetris动画
 	virtual void _rePaintDeadBlocks(); //重绘dead blocks
+	virtual void _performMovingAnimetionHorizontal(int lineNum); //播放行消除动画
 	
 
-private:
+protected:
 	int m_updateTime;
 	bool m_keyDown;
 
@@ -97,6 +99,7 @@ private:
 	Block* m_nextBlock;
 
 	CellState m_cellMatrix[CELL_MATRIX_WIDTH][CELL_MATRIX_HEIGHT];
+	CCSprite* m_deadSprites[CELL_MATRIX_WIDTH][CELL_MATRIX_HEIGHT];
 	DisplayManger* m_displayManager;
 	CCSpriteBatchNode* m_deadBlockBatch;
 
