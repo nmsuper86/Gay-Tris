@@ -11,17 +11,8 @@ class BlockI:public Block
 public:
 	BlockI();
 	~BlockI();
-	CREATE_FUNC(BlockI);
-	virtual bool init();
-
-public:
-//	virtual bool doTurn90Degrees();
-//	virtual bool doMove(Direction direction);
-
-private:
-//	virtual void _limitLine(Direction direction);
-//	virtual bool _canMove(Direction direction);
-
+	static BlockI* create(BlockManager* p_blockManagerToBind);
+	virtual bool init(BlockManager* p_blockManagerToBind);
 }; //class BlockI
 
 #endif //!__BLOCK_I_H__

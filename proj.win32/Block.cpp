@@ -10,9 +10,9 @@
 
 Block::Block()
 {
-	for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+	for (int x = 0; x < Block::BlockWidthCount; x++)
 	{
-		for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+		for (int y = 0; y < Block::BlockWidthCount; y++)
 		{
 			this->m_blockData[x][y] = ccp(-1, -1);
 		}
@@ -20,7 +20,7 @@ Block::Block()
 
 	this->m_timeCounter = 0;
 	this->m_degree = 0;
-//	this->m_position = ccp(CELL_MATRIX_WIDTH / 2, 2);
+//	this->m_position = ccp(BlockManager::CellMatrixWidth / 2, 2);
 } //Block::Block()
 
 Block::~Block()
@@ -28,10 +28,27 @@ Block::~Block()
 
 } //Block::~Block()
 
-bool Block::init()
+Block* Block::create(BlockManager* p_blockManagerToBind)
 {
+	Block* pRet = new Block();
+	if (pRet && pRet->init(p_blockManagerToBind))
+	{
+		pRet->autorelease();
+		return pRet;
+	}
+	else
+	{
+		delete pRet;
+		pRet = NULL;
+		return NULL;
+	}
+}
+
+bool Block::init(BlockManager* p_blockManagerToBind)
+{
+	this->m_manager = p_blockManagerToBind;
 	return true;
-} //bool Block::init()
+} //bool Block::init(BlockManager* p_blockManagerToBind)
 
 Block::CellPosition Block::doTurn90Degrees(bool saveState)
 {
@@ -40,9 +57,9 @@ Block::CellPosition Block::doTurn90Degrees(bool saveState)
 
 	CCPoint point00; //block左上角的方块坐标
 #pragma region 获取左上角的block
-	for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+	for (int x = 0; x < Block::BlockWidthCount; x++)
 	{
-		for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+		for (int y = 0; y < Block::BlockWidthCount; y++)
 		{
 			if (this->m_blockData[x][y].x != -1)
 			{
@@ -54,34 +71,34 @@ Block::CellPosition Block::doTurn90Degrees(bool saveState)
 	}
 #pragma endregion
 
-	CCPoint tempCellMatrix[BLOCK_WIDTH_COUNT][BLOCK_WIDTH_COUNT];
+	CCPoint tempCellMatrix[Block::BlockWidthCount][Block::BlockWidthCount];
 #pragma region 旋转blockData矩阵
 	if (this->m_type == BlockType::I && this->m_degree == 90)
 	{
-		for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+		for (int x = 0; x < Block::BlockWidthCount; x++)
 		{
-			for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+			for (int y = 0; y < Block::BlockWidthCount; y++)
 			{
-				tempCellMatrix[y][BLOCK_WIDTH_COUNT - x - 1] = this->m_blockData[x][y];
+				tempCellMatrix[y][Block::BlockWidthCount - x - 1] = this->m_blockData[x][y];
 			}
 		}
 	}
 	else
 	{
-		for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+		for (int x = 0; x < Block::BlockWidthCount; x++)
 		{
-			for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+			for (int y = 0; y < Block::BlockWidthCount; y++)
 			{
-				tempCellMatrix[BLOCK_WIDTH_COUNT - y - 1][x] = this->m_blockData[x][y];
+				tempCellMatrix[Block::BlockWidthCount - y - 1][x] = this->m_blockData[x][y];
 			}
 		}
 	}
 #pragma endregion
 
 #pragma region 修改矩阵中的数据并保存CellPosition位置 
-	for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+	for (int x = 0; x < Block::BlockWidthCount; x++)
 	{
-		for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+		for (int y = 0; y < Block::BlockWidthCount; y++)
 		{
 			if (tempCellMatrix[x][y].x != -1)
 			{
@@ -104,9 +121,9 @@ Block::CellPosition Block::doTurn90Degrees(bool saveState)
 			this->m_degree = (this->m_degree + 90) % 360;
 		}
 
-		for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+		for (int x = 0; x < Block::BlockWidthCount; x++)
 		{
-			for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+			for (int y = 0; y < Block::BlockWidthCount; y++)
 			{
 				this->m_blockData[x][y] = tempCellMatrix[x][y];
 			}
@@ -120,9 +137,9 @@ bool Block::doMove(Direction direction)
 {
 	if (direction == Direction::Down)
 	{
-		for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+		for (int x = 0; x < Block::BlockWidthCount; x++)
 		{
-			for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+			for (int y = 0; y < Block::BlockWidthCount; y++)
 			{
 				if (this->m_blockData[x][y].x != -1)
 				{
@@ -134,9 +151,9 @@ bool Block::doMove(Direction direction)
 	}
 	else if (direction == Direction::Left)
 	{
-		for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+		for (int x = 0; x < Block::BlockWidthCount; x++)
 		{
-			for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+			for (int y = 0; y < Block::BlockWidthCount; y++)
 			{
 				if (this->m_blockData[x][y].x != -1)
 				{
@@ -147,9 +164,9 @@ bool Block::doMove(Direction direction)
 	}
 	else if (direction == Direction::Right)
 	{
-		for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+		for (int x = 0; x < Block::BlockWidthCount; x++)
 		{
-			for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+			for (int y = 0; y < Block::BlockWidthCount; y++)
 			{
 				if (this->m_blockData[x][y].x != -1)
 				{
@@ -160,9 +177,9 @@ bool Block::doMove(Direction direction)
 	}
 	else
 	{
-		for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+		for (int x = 0; x < Block::BlockWidthCount; x++)
 		{
-			for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+			for (int y = 0; y < Block::BlockWidthCount; y++)
 			{
 				if (this->m_blockData[x][y].x != -1)
 				{
@@ -193,7 +210,7 @@ bool Block::increaseTimeCounter(int updateTime)
 	}
 }// bool Block::increaseTimeCounter()
 
-Block* Block::generateNewBlock()
+Block* Block::generateNewBlock(BlockManager* blockManagerToBind)
 {
 	Block* block = NULL;
 
@@ -202,31 +219,31 @@ Block* Block::generateNewBlock()
 	switch (blockType)
 	{
 	case 0:
-		block = BlockI::create();
+		block = BlockI::create(blockManagerToBind);
 		break;
 
 	case 1:
-		block = BlockL::create();
+		block = BlockL::create(blockManagerToBind);
 		break;
 
 	case 2:
-		block = BlockLR::create();
+		block = BlockLR::create(blockManagerToBind);
 		break;
 
 	case 3:
-		block = BlockO::create();
+		block = BlockO::create(blockManagerToBind);
 		break;
 
 	case 4:
-		block = BlockT::create();
+		block = BlockT::create(blockManagerToBind);
 		break;
 
 	case 5:
-		block = BlockZ::create();
+		block = BlockZ::create(blockManagerToBind);
 		break;
 
 	case 6:
-		block = BlockZR::create();
+		block = BlockZR::create(blockManagerToBind);
 		break;
 
 	default:
@@ -240,9 +257,9 @@ Block::CellPosition Block::getCellPosition()
 {
 	CellPosition position;
 	int counter = 0;
-	for (int x = 0; x < BLOCK_WIDTH_COUNT; x++)
+	for (int x = 0; x < Block::BlockWidthCount; x++)
 	{
-		for (int y = 0; y < BLOCK_WIDTH_COUNT; y++)
+		for (int y = 0; y < Block::BlockWidthCount; y++)
 		{
 			if (this->m_blockData[x][y].x != -1)
 			{

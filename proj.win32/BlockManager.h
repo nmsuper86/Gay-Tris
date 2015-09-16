@@ -5,52 +5,60 @@
 #include "Block.h"
 #include "DisplayManager.h"
 
-#define CELL_MATRIX_WIDTH 10
-#define CELL_MATRIX_HEIGHT 20
-#define DEFAULT_REFRESH_TIME 80
-#define REQUIRED_UPDATE_TIME 2
-
 using namespace cocos2d;
 
 class BlockManager:public CCNode
 {
-public: //系统调用
-	
-	BlockManager();
-	~BlockManager();
-	
-	static BlockManager* create(CCPoint position, DisplayManger* displayManager);
-	virtual bool init(CCPoint position, DisplayManger* displayManager);
-
-	virtual void update(float delta); //定时刷新函数
-
-	virtual void pressedLeft();
-	virtual void pressedRight();
-	virtual void pressedDown();
-	virtual void pressedUp();
-
-public: //公有自定义函数
-	int getUpdateTime(); //获取更新时间
-	void setUpdateTime(int time);
-	void bindDisplayManager(DisplayManger* manager);
-	virtual CCPoint convertBlockToPixel(CCPoint blockPoint); //把网格坐标转化为实际坐标（右下角）
-	virtual inline CCPoint convertRBToCenter(CCPoint rightBottomPoint)
-	{
-		CCPoint point = ccp(rightBottomPoint.x + CELL_SIZE / 2, rightBottomPoint.y + CELL_SIZE / 2);
-		return point;
-	}
-	void setKeyDownState(bool keyDownState); //设定按键按下状态 
-	
-	
-public:
+public: 
 	typedef enum
 	{
 		Empty,
 		Dropping,
 		Dead
 	}CellState;
+	static const int CellMatrixWidth = 10;
+	static const int CellMatrixHeight = 20;
+	static const int DefaultRefreshTime = 80;
+	static const int RequiredUpdateTime = 2;
 
-private: //私有自定义函数
+protected:
+	int m_periodDropping;
+	bool m_isKeyboardPressed;
+
+	Block* m_blockDropping;
+	Block* m_blockWaiting;
+
+	CellState m_matrixCellState[BlockManager::CellMatrixWidth][BlockManager::CellMatrixHeight];
+	CCSprite* m_matrixDeadBlockSprites[BlockManager::CellMatrixWidth][BlockManager::CellMatrixHeight];
+
+	DisplayManger* m_boundDisplayManager;
+	CCSpriteBatchNode* m_spriteBatchNodeDeadBlocks;
+
+
+public: //系统调用
+	
+	BlockManager();
+	~BlockManager();
+	
+	static BlockManager* create(CCPoint p_pointToDisplayOnScreen, DisplayManger* p_displayManagerTobind);
+	virtual bool init(CCPoint p_pointToDisplayOnScreen, DisplayManger* p_displayManagerTobind);
+
+	virtual void update(float p_delta); //定时刷新函数
+
+	virtual void triggerKeyboard(int p_valueKey);
+
+public: //公有自定义函数
+	int getUpdateTime(); //获取更新时间
+	void setUpdateTime(int p_updateTime);
+	virtual CCPoint convertBlockPositionToPixelPosition(CCPoint p_pointBlock); //把网格坐标转化为实际坐标（右下角）
+	virtual inline CCPoint convertPositionToCenterPosition(CCPoint p_pointRightBottom)
+	{
+		CCPoint pointResult = ccp(p_pointRightBottom.x + Block::CellSize / 2, p_pointRightBottom.y + Block::CellSize / 2);
+		return pointResult;
+	}
+	void setKeyboardState(bool p_isKeyPressed); //设定按键按下状态 
+
+protected: //私有自定义函数
 	virtual Block* _createNewBlock(); //生成新的方块
 	virtual void _pushNewBlock(); //生成新的nextBlock 修改Stage矩阵 并把原nextBlock推上舞台
 
@@ -71,15 +79,15 @@ private: //私有自定义函数
 	virtual void _updateCellMatrixBeforeDie(); //为Block死亡更新单元矩阵
 	virtual void _updateCellMatrixAfterChanged(Block::CellPosition originalPosition, Block::CellPosition newPosition); //用position更新矩阵
 	virtual int _eliminateLines(); //尝试消除
-	virtual bool _blockOverlayed(Block::CellPosition block1, Block::CellPosition block2); //判断方块是否重叠
+	bool BlockManager::_blockOverlayed(Block::CellPosition p_block1, Block::CellPosition p_block2);
 	virtual void _endGame(); //结束游戏
 
 	virtual void _eliminateSingleLine(int lineNum); //消除单行（动画效果,清除数据等）
 	virtual inline bool _isLineFilled(int lineNum)
 	{
-		for (int i = 0; i < CELL_MATRIX_WIDTH; i++)
+		for (int i = 0; i < BlockManager::CellMatrixWidth; i++)
 		{
-			if (this->m_cellMatrix[i][lineNum] != BlockManager::CellState::Dead)
+			if (this->m_matrixCellState[i][lineNum] != BlockManager::CellState::Dead)
 			{
 				return false;
 			}
@@ -88,20 +96,7 @@ private: //私有自定义函数
 	} //判断该行是否已满
 	virtual void _isTetris(int startLine); //Tetris动画
 	virtual void _rePaintDeadBlocks(); //重绘dead blocks
-	virtual void _performMovingAnimetionHorizontal(int lineNum); //播放行消除动画
 	
-
-protected:
-	int m_updateTime;
-	bool m_keyDown;
-
-	Block* m_currentBlock;
-	Block* m_nextBlock;
-
-	CellState m_cellMatrix[CELL_MATRIX_WIDTH][CELL_MATRIX_HEIGHT];
-	CCSprite* m_deadSprites[CELL_MATRIX_WIDTH][CELL_MATRIX_HEIGHT];
-	DisplayManger* m_displayManager;
-	CCSpriteBatchNode* m_deadBlockBatch;
 
 }; //class BlockManager
 

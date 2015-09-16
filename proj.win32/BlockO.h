@@ -9,16 +9,8 @@ class BlockO :public Block
 public:
 	BlockO();
 	~BlockO();
-	CREATE_FUNC(BlockO);
-	virtual bool init();
-
-public:
-	//	virtual bool doTurn90Degrees();
-	//	virtual bool doMove(Direction direction);
-
-private:
-	//	virtual void _limitLine(Direction direction);
-	//	virtual bool _canMove(Direction direction);
+	static BlockO* create(BlockManager* p_blockManagerToBind);
+	virtual bool init(BlockManager* p_blockManagerToBind);
 
 }; //class BlockO :public Block
 

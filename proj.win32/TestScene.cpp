@@ -27,6 +27,8 @@ bool TestScene::init()
 
 	this->addChild(m_blockManager);
 
+	this->m_displayManager->setLevel(20, m_blockManager);
+
 	CCDirector::sharedDirector()->getOpenGLView()->setAccelerometerKeyHook(TestScene::keyboardHook);
 
 	return true;
@@ -51,29 +53,11 @@ void TestScene::keyboardHook(UINT message, WPARAM wParam, LPARAM lParam)
 		switch (message)
 		{
 		case WM_KEYDOWN:
-			switch (wParam)
-			{
-			case VK_LEFT:
-				manager->pressedLeft();
-				break; //case VK_LEFT
-
-			case VK_RIGHT:
-				manager->pressedRight();
-				break; //case VK_RIGHT
-
-			case VK_DOWN:
-				manager->pressedDown();
-				break; //case VK_DOWN
-
-			case VK_UP:
-				manager->pressedUp();
-				break; //case VK_UP
-			}
-			manager->setKeyDownState(true);
+			manager->triggerKeyboard(wParam);
 			break; //case WM_KEYDOWN
 
 		case WM_KEYUP:
-			manager->setKeyDownState(false);
+			manager->setKeyboardState(false);
 			break; //case WM_KEYUP
 		}
 	}

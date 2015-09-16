@@ -9,16 +9,8 @@ class BlockLR :public Block
 public:
 	BlockLR();
 	~BlockLR();
-	CREATE_FUNC(BlockLR);
-	virtual bool init();
-
-public:
-//	virtual bool doTurn90Degrees();
-//	virtual bool doMove(Direction direction);
-
-private:
-//	virtual void _limitLine(Direction direction);
-//	virtual bool _canMove(Direction direction);
+	static BlockLR* create(BlockManager* p_blockManagerToBind);
+	virtual bool init(BlockManager* p_blockManagerToBind);
 
 }; //class BlockLR: public Block
 

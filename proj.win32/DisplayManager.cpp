@@ -45,19 +45,19 @@ void DisplayManger::lineEliminated(int lineCount, BlockManager* sender)
 	switch (lineCount)
 	{
 	case 1:
-		this->_scoreAdded(SCORE_1_LINE * m_currentLevel * 0.7);
+		this->_increaseScore(SCORE_1_LINE * m_currentLevel * 0.7);
 		break;
 
 	case 2:
-		this->_scoreAdded(SCORE_2_LINES * m_currentLevel * 0.7);
+		this->_increaseScore(SCORE_2_LINES * m_currentLevel * 0.7);
 		break;
 
 	case 3:
-		this->_scoreAdded(SCORE_3_LINES * m_currentLevel * 0.7);
+		this->_increaseScore(SCORE_3_LINES * m_currentLevel * 0.7);
 		break;
 
 	case 4:
-		this->_scoreAdded(SCORE_4_LINES * m_currentLevel * 0.7);
+		this->_increaseScore(SCORE_4_LINES * m_currentLevel * 0.7);
 
 	default:
 		break;
@@ -67,10 +67,7 @@ void DisplayManger::lineEliminated(int lineCount, BlockManager* sender)
 	
 	if (this->m_linesInCurrentLevel >= LINES_TO_UPGRADE && this->m_currentLevel <= MAX_LEVEL)
 	{
-		this->m_linesInCurrentLevel %= 10;
-		this->m_currentLevel++;
-		sender->setUpdateTime(DEFAULT_REFRESH_TIME / MAX_LEVEL * (MAX_LEVEL - m_currentLevel));
-		this->m_labelLevel->setString(CCString::createWithFormat("%d", this->m_currentLevel)->getCString());
+		this->setLevel(++m_currentLevel, sender);
 	}
 
 } //void DisplayManger::lineEliminated(int lineCount)
@@ -91,7 +88,7 @@ void DisplayManger::nextBlockChanged(Block* block)
 	this->blockDropped();
 } //void DisplayManger::nextBlockChanged(Block* block)
 
-void DisplayManger::_scoreAdded(int score)
+void DisplayManger::_increaseScore(int score)
 {
 	this->m_totalScore += score;
 	this->m_labelScore->setString(CCString::createWithFormat("%d", this->m_totalScore)->getCString());
@@ -99,5 +96,13 @@ void DisplayManger::_scoreAdded(int score)
 
 void DisplayManger::blockDropped()
 {
-	this->_scoreAdded(m_currentLevel);
+	this->_increaseScore(m_currentLevel);
+}
+
+void DisplayManger::setLevel(int p_level, BlockManager* p_blockManager)
+{
+	this->m_linesInCurrentLevel %= 10;
+	this->m_currentLevel = p_level;
+	this->m_labelLevel->setString(CCString::createWithFormat("%d", this->m_currentLevel)->getCString());
+	p_blockManager->setUpdateTime(BlockManager::DefaultRefreshTime / MAX_LEVEL * (MAX_LEVEL - m_currentLevel));
 }

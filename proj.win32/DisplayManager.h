@@ -18,6 +18,15 @@ class BlockManager;
 
 class DisplayManger:public CCNode
 {
+protected:
+	int m_currentLevel;
+	int m_totalScore;
+	int m_linesInCurrentLevel;
+
+	CCLabelTTF* m_labelScore;
+	CCLabelTTF* m_labelLevel;
+	CCSprite* m_nextBlockImage;
+
 public:
 	DisplayManger();
 	~DisplayManger();
@@ -29,20 +38,10 @@ public:
 	virtual void lineEliminated(int lineCount, BlockManager* sender);
 	virtual void nextBlockChanged(Block* block);
 	virtual void blockDropped();
+	virtual void setLevel(int p_level, BlockManager* p_blockManager);
 
 protected:
-	virtual void _scoreAdded(int score);
-
-protected:
-	int m_currentLevel;
-	int m_totalScore;
-	int m_linesInCurrentLevel;
-
-	CCLabelTTF* m_labelScore;
-	CCLabelTTF* m_labelLevel;
-	CCSprite* m_nextBlockImage;
-	
-
+	virtual void _increaseScore(int score);
 
 }; //class DisplayManager
 
