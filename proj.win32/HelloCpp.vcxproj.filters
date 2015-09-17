@@ -19,9 +19,6 @@
     <Filter Include="Scene\MainMenu">
       <UniqueIdentifier>{d3da1b6d-54ad-4f60-a2db-01918ca196c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\GameSceneClassic">
-      <UniqueIdentifier>{fbc5dc88-b3ad-403a-b53a-b0f1504ef4ef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene\GameSceneNew">
       <UniqueIdentifier>{8ffe260d-6d7e-42a4-9e07-bd0b880146c3}</UniqueIdentifier>
     </Filter>
@@ -61,15 +58,15 @@
     <Filter Include="Manager\DisplayManager">
       <UniqueIdentifier>{89cc22f8-a003-4764-9576-1f1455c4970f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\SceneClassic">
+      <UniqueIdentifier>{fbc5dc88-b3ad-403a-b53a-b0f1504ef4ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>win32</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\AppDelegate.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="Block.cpp">
@@ -108,15 +105,15 @@
     <ClCompile Include="BlockZR.cpp">
       <Filter>Entity\Block\BlockZR</Filter>
     </ClCompile>
+    <ClCompile Include="SceneClassic.cpp">
+      <Filter>Scene\SceneClassic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>win32</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\AppDelegate.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="Block.h">
@@ -154,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="BlockZR.h">
       <Filter>Entity\Block\BlockZR</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneClassic.h">
+      <Filter>Scene\SceneClassic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

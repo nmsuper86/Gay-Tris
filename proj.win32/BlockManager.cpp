@@ -551,7 +551,7 @@ void BlockManager::_eliminateSingleLine(int lineNum)
 //Unfinished
 void BlockManager::_isTetris(int startLine)
 {
-
+	
 } //void BlockManager::_isTetris(int startLine)
 
 void BlockManager::_rePaintDeadBlocks()
